@@ -8,7 +8,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 const Model = ({ type, path, position }) => {
   const ref = useRef();
   const transformRef = useRef();
-  const { setIsOrbitEnabled } = useMachine();
+  const { setIsOrbitEnabled, isOrbitEnabled } = useMachine();
   const { camera, gl } = useThree();
   const [isSelected, setIsSelected] = useState(false);
   const [model, setModel] = useState(null);
@@ -54,11 +54,8 @@ const Model = ({ type, path, position }) => {
 
     // Her karede transform değişikliği (sürükleme devam ederken)
     const onTransformChange = () => {
-      console.log("TransformControls: objede değişiklik var");
-      // Örneğin, objenin position, rotation, scale bilgilerini alabilirsin
       if (ref.current) {
         const { x, y, z } = ref.current.position;
-        console.log(`Yeni konum: x=${x}, y=${y}, z=${z}`);
       }
     };
 
@@ -71,7 +68,7 @@ const Model = ({ type, path, position }) => {
       controls.removeEventListener("mouseUp", onTransformEnd);
       controls.removeEventListener("change", onTransformChange);
     };
-  }, [setIsOrbitEnabled]);
+  }, [isSelected]);
 
 
   if (loading) {
