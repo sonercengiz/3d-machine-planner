@@ -1,24 +1,25 @@
 import { Box, Paper, Typography } from "@mui/material";
 
 const modules = [
-  { id: "engine", name: "Motor" },
-  { id: "conveyor", name: "Konveyör" },
-  { id: "frame", name: "Çerçeve" },
+  { id: "model1", name: "model1", path: "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx" },
+  { id: "model2", name: "model2", path: "/assets/models/wrong.fbx" },
 ];
 
 const Sidebar = () => {
   const handleDragStart = (event, module) => {
     event.dataTransfer.setData("moduleType", module.id);
+    event.dataTransfer.setData("modelPath", module.path); // Model dosya yolunu da gönderelim
+    console.log(`Sürüklenen model: ${module.name} - Path: ${module.path}`);
   };
 
   return (
     <Box
       sx={{
         width: 220,
-        bgcolor: "rgba(0, 0, 0, 0.8)", // Şeffaf siyah arka plan
+        bgcolor: "rgba(0, 0, 0, 0.8)",
         p: 2,
-        borderRadius: 2, // Hafif yuvarlatılmış kenarlar
-        color: "white", // Metin rengini beyaz yapalım
+        borderRadius: 2,
+        color: "white",
       }}
     >
       <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
@@ -34,13 +35,13 @@ const Sidebar = () => {
             my: 1,
             textAlign: "center",
             cursor: "grab",
-            bgcolor: "rgba(255, 255, 255, 0.1)", // Hafif şeffaf beyaz
+            bgcolor: "rgba(255, 255, 255, 0.1)",
             color: "white",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.3)", // Hafif gölge efekti
+            boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
             borderRadius: 1,
             transition: "all 0.2s",
             "&:hover": {
-              bgcolor: "rgba(255, 255, 255, 0.2)", // Hover olduğunda daha belirgin beyaz
+              bgcolor: "rgba(255, 255, 255, 0.2)",
             },
           }}
         >

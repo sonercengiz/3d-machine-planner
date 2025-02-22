@@ -1,21 +1,31 @@
+import * as THREE from 'three'
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, SoftShadows } from "@react-three/drei";
-import { useState, useCallback } from "react";
-import Module from "../modules/Module";
+import { OrbitControls, Environment, SoftShadows, GizmoHelper, GizmoViewport } from "@react-three/drei";
+import { useState, useCallback, useEffect, Suspense } from "react";
+import Module from "../modules/Model";
+import { useMachine } from "../context/MachineContext";
 
 const MachineScene = () => {
   const [modules, setModules] = useState([]);
+  const { isOrbitEnabled } = useMachine();
 
-  const handleDrop = useCallback((event) => {
+  const handleDrop = useCallback(async (event) => {
     event.preventDefault();
-    const moduleType = event.dataTransfer.getData("moduleType");
-    if (!moduleType) return;
+    const modelPath = event.dataTransfer.getData("modelPath");
 
-    // Yeni modülü rastgele bir konuma ekleyelim
-    setModules((prev) => [
-      ...prev,
-      { id: Date.now(), type: moduleType, position: [0, 0, 0] },
-    ]);
+    try {
+      // Path doğrulama
+      const response = await fetch(modelPath);
+      if (!response.ok) throw new Error("Dosya bulunamadı");
+
+      setModules((prev) => [
+        ...prev,
+        { id: Date.now(), path: modelPath, position: [0, 0, 0] }
+      ]);
+    } catch (err) {
+      console.error("Model eklenemedi:", err);
+      // Hata popup'ı tetikle (MachineContext üzerinden)
+    }
   }, []);
 
   return (
@@ -40,23 +50,46 @@ const MachineScene = () => {
           shadow-mapSize-height={2048}
         />
 
+        {/* Küçük eksen yönlendirme aracı sağ alt köşeye eklendi */}
+        <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
+          <GizmoViewport />
+        </GizmoHelper>
 
-        <OrbitControls />
+
+        <OrbitControls enableRotate={isOrbitEnabled} enablePan={isOrbitEnabled}
+          mouseButtons={{
+            LEFT: THREE.MOUSE.ROTATE,
+            RIGHT: THREE.MOUSE.PAN,
+            MIDDLE: THREE.MOUSE.DOLLY
+          }} />
+
+        {/* Izgara çizgileri */}
         <gridHelper args={[20, 20]} />
 
         {/* Özel HDRI Laboratuvar Arka Planı */}
-        {/* <Environment files="/src/assets/hdr/vintage_measuring_lab_1k.hdr" background /> */}
+        {/* <Environment files="/assets/hdr/vintage_measuring_lab_1k.hdr" background /> */}
 
         {/* Yatay zemin */}
-        <mesh receiveShadow position={[0, -0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        {/* <mesh receiveShadow position={[0, -0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[20, 20]} />
           <meshStandardMaterial color="gray" />
-        </mesh>
+        </mesh> */}
 
         {/* Modülleri sahnede göster */}
-        {modules.map((mod) => (
-          <Module key={mod.id} type={mod.type} position={mod.position} />
-        ))}
+        <Suspense fallback={
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="#ffd700" />
+          </mesh>
+        }>
+          {modules.map((mod) => (
+            <Module
+              key={`${mod.id}-${mod.path}`} // Path değişikliklerini takip etmek için
+              path={mod.path}
+              position={mod.position}
+            />
+          ))}
+        </Suspense>
       </Canvas>
     </div>
   );
