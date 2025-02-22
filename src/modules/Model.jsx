@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { useThree } from "@react-three/fiber";
-import { TransformControls } from "@react-three/drei";
+import { Text, TransformControls } from "@react-three/drei";
 import { useMachine } from "../context/MachineContext";
 import { useLoader } from '@react-three/fiber';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -8,8 +7,8 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 const Model = ({ type, path, position }) => {
   const ref = useRef();
   const transformRef = useRef();
+  const scaleRef = useRef();
   const { setIsOrbitEnabled, isOrbitEnabled } = useMachine();
-  const { camera, gl } = useThree();
   const [isSelected, setIsSelected] = useState(false);
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
@@ -32,23 +31,16 @@ const Model = ({ type, path, position }) => {
     }
   }, [fbx, path]);
 
-  // useEffect(() => {
-  //   setIsOrbitEnabled(!isSelected);
-  // }, [isSelected, setIsOrbitEnabled]);
-
   useEffect(() => {
-    const controls = transformRef.current;
-    if (!controls) return;
+    if (!transformRef.current || !scaleRef.current) return;
 
     // Başlangıç (fare basılıp sürükleme başlayınca)
     const onTransformStart = () => {
-      console.log("TransformControls: sürükleme başladı");
       setIsOrbitEnabled(false);
     };
 
     // Bitiş (fare bırakılınca)
     const onTransformEnd = () => {
-      console.log("TransformControls: sürükleme bitti");
       setIsOrbitEnabled(true);
     };
 
@@ -59,24 +51,38 @@ const Model = ({ type, path, position }) => {
       }
     };
 
-    controls.addEventListener("mouseDown", onTransformStart);
-    controls.addEventListener("mouseUp", onTransformEnd);
-    controls.addEventListener("change", onTransformChange);
+    transformRef.current.addEventListener("mouseDown", onTransformStart);
+    transformRef.current.addEventListener("mouseUp", onTransformEnd);
+    transformRef.current.addEventListener("change", onTransformChange);
+
+    scaleRef.current.addEventListener("mouseDown", onTransformStart);
+    scaleRef.current.addEventListener("mouseUp", onTransformEnd);
+    scaleRef.current.addEventListener("change", onTransformChange);
 
     return () => {
-      controls.removeEventListener("mouseDown", onTransformStart);
-      controls.removeEventListener("mouseUp", onTransformEnd);
-      controls.removeEventListener("change", onTransformChange);
+      transformRef.current.removeEventListener("mouseDown", onTransformStart);
+      transformRef.current.removeEventListener("mouseUp", onTransformEnd);
+      transformRef.current.removeEventListener("change", onTransformChange);
+
+      scaleRef.current.removeEventListener("mouseDown", onTransformStart);
+      scaleRef.current.removeEventListener("mouseUp", onTransformEnd);
+      scaleRef.current.removeEventListener("change", onTransformChange);
     };
   }, [isSelected]);
 
 
   if (loading) {
+    console.log("slm")
     return (
-      <mesh position={position}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="yellow" />
-      </mesh>
+      <Text
+        position={[0, 0, 0]} // Metnin sahnedeki konumu
+        fontSize={0.5} // Metnin boyutu
+        color="white" // Metnin rengi
+        anchorX="center" // Yatay hizalama
+        anchorY="middle" // Dikey hizalama
+      >
+        Loading
+      </Text>
     );
   }
 
@@ -111,8 +117,12 @@ const Model = ({ type, path, position }) => {
       />
 
       {isSelected && (
-        <TransformControls ref={transformRef} object={ref.current} mode="translate" />
+        <>
+          <TransformControls ref={transformRef} object={ref.current} mode="translate" />
+          <TransformControls ref={scaleRef} object={ref.current} mode="scale" />
+        </>
       )}
+
     </>
   );
 };

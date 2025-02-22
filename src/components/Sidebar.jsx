@@ -1,8 +1,8 @@
 import { Box, Paper, Typography } from "@mui/material";
 
 const modules = [
-  { id: "model1", name: "model1", path: "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx" },
-  { id: "model2", name: "model2", path: "/assets/models/wrong.fbx" },
+  { id: "model1", name: "model", path: "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx" },
+  { id: "piston", name: "piston", path: "/assets/models/piston.fbx" },
 ];
 
 const Sidebar = () => {
@@ -45,7 +45,9 @@ const Sidebar = () => {
             },
           }}
         >
-          {module.name}
+          <Typography variant="subtitle">
+            {module.name}
+          </Typography>
         </Paper>
       ))}
     </Box>
