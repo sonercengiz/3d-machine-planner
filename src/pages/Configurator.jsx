@@ -10,24 +10,9 @@ const Configurator = () => {
       <MainScene />
 
       {/* Sidebar Overlay gibi Üstte Duracak */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 20,
-          left: 20, // Sidebar'ı sol üst köşeye sabitle
-          zIndex: 1, // Üstte görünmesini sağla
-        }}
-      >
-        <Sidebar />
-      </Box>
-      <Box sx={{
-        position: "absolute",
-        top: 20,
-        right: 20, // Sidebar'ı sol üst köşeye sabitle
-        zIndex: 1, // Üstte görünmesini sağla
-      }}>
-        <ModelInfoCard />
-      </Box>
+
+      <Sidebar />
+      <ModelInfoCard />
 
     </Box>
   );

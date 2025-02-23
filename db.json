@@ -1,0 +1,55 @@
+{
+    "models": [
+        {
+            "id": "model1",
+            "name": "model",
+            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+        },
+        {
+            "id": "model2",
+            "name": "model",
+            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+        },
+        {
+            "id": "model3",
+            "name": "model",
+            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+        },
+        {
+            "id": "model4",
+            "name": "model",
+            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+        },
+        {
+            "id": "model5",
+            "name": "model",
+            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+        },
+        {
+            "id": "model6",
+            "name": "model",
+            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+        },
+        {
+            "id": "piston",
+            "name": "piston",
+            "path": "/assets/models/piston.fbx"
+        }
+    ],
+    "assemblies": [
+        {
+            "id": "8a68",
+            "timestamp": "2025-02-23T02:26:00.418Z",
+            "parentModel": {
+                "id": "model1",
+                "name": "model",
+                "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+            },
+            "childModel": {
+                "id": "model1",
+                "name": "model",
+                "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+            }
+        }
+    ]
+}

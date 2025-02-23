@@ -47,47 +47,32 @@ const Model = ({ id, path, position }) => {
       setIsOrbitEnabled(true);
     };
 
-    // Her karede transform değişikliği (sürükleme devam ederken)
-    const onTransformChange = () => {
-      if (ref.current) {
-        const { x, y, z } = ref.current.position;
-      }
-    };
-
     transformRef.current.addEventListener("mouseDown", onTransformStart);
     transformRef.current.addEventListener("mouseUp", onTransformEnd);
-    transformRef.current.addEventListener("change", onTransformChange);
 
     scaleRef.current.addEventListener("mouseDown", onTransformStart);
     scaleRef.current.addEventListener("mouseUp", onTransformEnd);
-    scaleRef.current.addEventListener("change", onTransformChange);
 
     rotationRef.current.addEventListener("mouseDown", onTransformStart);
     rotationRef.current.addEventListener("mouseUp", onTransformEnd);
-    rotationRef.current.addEventListener("change", onTransformChange);
 
     return () => {
       if (transformRef.current) {
         transformRef.current.removeEventListener("mouseDown", onTransformStart);
         transformRef.current.removeEventListener("mouseUp", onTransformEnd);
-        transformRef.current.removeEventListener("change", onTransformChange);
       }
       if (scaleRef.current) {
         scaleRef.current.removeEventListener("mouseDown", onTransformStart);
         scaleRef.current.removeEventListener("mouseUp", onTransformEnd);
-        scaleRef.current.removeEventListener("change", onTransformChange);
       }
       if (rotationRef.current) {
         rotationRef.current.removeEventListener("mouseDown", onTransformStart);
         rotationRef.current.removeEventListener("mouseUp", onTransformEnd);
-        rotationRef.current.removeEventListener("change", onTransformChange);
       }
     };
   }, [selectedModelId]);
 
-
   if (loading) {
-    console.log("slm")
     return (
       <Text
         position={[0, 0, 0]} // Metnin sahnedeki konumu

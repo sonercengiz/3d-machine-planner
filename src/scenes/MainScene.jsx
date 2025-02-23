@@ -10,6 +10,8 @@ const MainScene = () => {
 
   const handleDrop = useCallback(async (event) => {
     event.preventDefault();
+    const modelId = event.dataTransfer.getData("modelId");
+    const modelName = event.dataTransfer.getData("modelName");
     const modelPath = event.dataTransfer.getData("modelPath");
 
     try {
@@ -17,7 +19,7 @@ const MainScene = () => {
       const response = await fetch(modelPath);
       if (!response.ok) throw new Error("Dosya bulunamadı");
 
-      addModel({ path: modelPath, position: [0, 0, 0] });
+      addModel({ id: modelId, name: modelName, path: modelPath, position: [0, 0, 0] });
     } catch (err) {
       console.error("Model eklenemedi:", err);
       // Hata popup'ı tetikle (MachineContext üzerinden)

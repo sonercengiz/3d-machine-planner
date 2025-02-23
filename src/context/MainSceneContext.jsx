@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { loadAssembly, saveAssembly } from "../services/AssemblyService";
 
 const MainSceneContext = createContext();
 
@@ -8,14 +9,42 @@ export const MainSceneProvider = ({ children }) => {
   const [isOrbitEnabled, setIsOrbitEnabled] = useState(true); // OrbitControls yönetimi
   const [globalError, setGlobalError] = useState(null);
 
-  const addModel = (model) => {
-    setModels((prev) => [...prev, { id: Date.now(), ...model }]);
+  const addModel = ({ id, name, path, position }) => {
+    setModels((prev) => [...prev, { id: `${Date.now()};${id}`, name, path, position }]);
   };
 
-  useEffect(() => {
-    console.log(models);
+  // Service Katmanı: Kaydet
+  const saveCurrentAssembly = async () => {
+    try {
+      // "models" array'ini assemblyService'e gönder
+      await saveAssembly(models);
+      console.log(">>> [saveCurrentAssembly] Kayıt işlemi tamam!");
+    } catch (error) {
+      console.error(">>> [saveCurrentAssembly] hata:", error);
+      setGlobalError(error.message);
+    }
+  };
 
-  }, [models]);
+  // Service Katmanı: Yükle
+  const loadAssemblyFromFile = async () => {
+    try {
+      const data = await loadAssembly(); // { timestamp, models: [...] }
+      if (!data) return;
+      // data.models -> [{id, path, position}, ...]
+
+      // Mevcut modelleri sıfırlayalım
+      setModels([]);
+      // Yüklenen modelleri ekleyelim
+      data.models.forEach((m) => {
+        // m = { id, path, position }
+        setModels((prev) => [...prev, m]);
+      });
+      console.log(">>> [loadAssemblyFromFile] Yükleme tamam!", data);
+    } catch (error) {
+      console.error(">>> [loadAssemblyFromFile] hata:", error);
+      setGlobalError(error.message);
+    }
+  };
 
   const clearError = () => setGlobalError(null);
 
@@ -29,7 +58,9 @@ export const MainSceneProvider = ({ children }) => {
       setIsOrbitEnabled,
       globalError,
       setGlobalError,
-      clearError
+      clearError,
+      saveCurrentAssembly,        // <-- export ettiğimiz yeni fonksiyon
+      loadAssemblyFromFile       // <-- export ettiğimiz yeni fonksiyon
     }}>
       {children}
     </MainSceneContext.Provider>

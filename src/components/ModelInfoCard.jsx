@@ -1,13 +1,20 @@
 import { Box, Paper, Typography } from '@mui/material';
 import React from 'react'
+import { useMainScene } from '../context/MainSceneContext';
 
 const ModelInfoCard = ({ id, modelName }) => {
+    const { models, } = useMainScene()
     return (
         <Box
             sx={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                zIndex: 1,
                 width: 220,
                 bgcolor: "rgba(0, 0, 0, 0.8)",
                 p: 2,
+                m: 2,
                 borderRadius: 2,
                 color: "white",
             }}
@@ -16,12 +23,10 @@ const ModelInfoCard = ({ id, modelName }) => {
                 {modelName}
             </Typography>
             <Paper
-                draggable
                 sx={{
                     p: 2,
                     my: 1,
                     textAlign: "center",
-                    cursor: "grab",
                     bgcolor: "rgba(255, 255, 255, 0.1)",
                     color: "white",
                     boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
