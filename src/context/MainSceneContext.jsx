@@ -7,6 +7,7 @@ export const MainSceneProvider = ({ children }) => {
   const [models, setModels] = useState([]);
   const [selectedModelId, setSelectedModelId] = useState(null);
   const [isOrbitEnabled, setIsOrbitEnabled] = useState(true); // OrbitControls yönetimi
+  const [selectedTransformControl, setSelectedTransformControl] = useState("move"); // move, rotate, scale
   const [globalError, setGlobalError] = useState(null);
 
   const addModel = ({ id, name, path, position }) => {
@@ -56,6 +57,8 @@ export const MainSceneProvider = ({ children }) => {
       setSelectedModelId,
       isOrbitEnabled,
       setIsOrbitEnabled,
+      selectedTransformControl,
+      setSelectedTransformControl,
       globalError,
       setGlobalError,
       clearError,

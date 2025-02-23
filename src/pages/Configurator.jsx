@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import MainScene from "../scenes/MainScene";
 import ModelInfoCard from "../components/ModelInfoCard";
+import Toolbar from "../components/Toolbar";
 
 const Configurator = () => {
   return (
@@ -13,6 +14,7 @@ const Configurator = () => {
 
       <Sidebar />
       <ModelInfoCard />
+      <Toolbar/>
 
     </Box>
   );

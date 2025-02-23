@@ -9,7 +9,7 @@ const Model = ({ id, path, position }) => {
   const transformRef = useRef();
   const scaleRef = useRef();
   const rotationRef = useRef();
-  const { setIsOrbitEnabled, selectedModelId, setSelectedModelId } = useMainScene();
+  const { setIsOrbitEnabled, selectedModelId, setSelectedModelId, selectedTransformControl } = useMainScene();
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,44 +33,29 @@ const Model = ({ id, path, position }) => {
     }
   }, [fbx, path]);
 
-  useEffect(() => {
+
+
+    useEffect(() => {
     if (selectedModelId !== id) return;
-    if (!transformRef.current || !scaleRef.current || !rotationRef.current) return;
+    
+    const currentControl = 
+      selectedTransformControl === "move" ? transformRef :
+      selectedTransformControl === "scale" ? scaleRef :
+      selectedTransformControl === "rotate" ? rotationRef :
+      null;
 
-    // Başlangıç (fare basılıp sürükleme başlayınca)
-    const onTransformStart = () => {
-      setIsOrbitEnabled(false);
+    if (!currentControl?.current) return;
+
+    const onDraggingChanged = (event) => {
+      setIsOrbitEnabled(!event.value);
     };
 
-    // Bitiş (fare bırakılınca)
-    const onTransformEnd = () => {
-      setIsOrbitEnabled(true);
-    };
-
-    transformRef.current.addEventListener("mouseDown", onTransformStart);
-    transformRef.current.addEventListener("mouseUp", onTransformEnd);
-
-    scaleRef.current.addEventListener("mouseDown", onTransformStart);
-    scaleRef.current.addEventListener("mouseUp", onTransformEnd);
-
-    rotationRef.current.addEventListener("mouseDown", onTransformStart);
-    rotationRef.current.addEventListener("mouseUp", onTransformEnd);
+    currentControl.current.addEventListener("dragging-changed", onDraggingChanged);
 
     return () => {
-      if (transformRef.current) {
-        transformRef.current.removeEventListener("mouseDown", onTransformStart);
-        transformRef.current.removeEventListener("mouseUp", onTransformEnd);
-      }
-      if (scaleRef.current) {
-        scaleRef.current.removeEventListener("mouseDown", onTransformStart);
-        scaleRef.current.removeEventListener("mouseUp", onTransformEnd);
-      }
-      if (rotationRef.current) {
-        rotationRef.current.removeEventListener("mouseDown", onTransformStart);
-        rotationRef.current.removeEventListener("mouseUp", onTransformEnd);
-      }
+      currentControl.current?.removeEventListener("dragging-changed", onDraggingChanged);
     };
-  }, [selectedModelId]);
+  }, [selectedModelId, selectedTransformControl, id, setIsOrbitEnabled]);
 
   if (loading) {
     return (
@@ -105,10 +90,8 @@ const Model = ({ id, path, position }) => {
       <primitive
         ref={ref}
         object={model}
+        scale={[1,1,1]}
         position={position}
-        scale={[1, 1, 1]}
-        castShadow
-        receiveShadow
         onClick={(e) => {
           e.stopPropagation();
           setSelectedModelId(id)
@@ -116,14 +99,37 @@ const Model = ({ id, path, position }) => {
         onPointerMissed={() => setSelectedModelId(null)}
       />
 
-      {(selectedModelId === id) && (
+      {selectedModelId === id && (
         <>
-          <TransformControls ref={transformRef} object={ref.current} mode="translate" enabled={1} size={1.8} />
-          <TransformControls ref={scaleRef} object={ref.current} mode="scale" enabled={1} size={1} />
-          <TransformControls ref={rotationRef} object={ref.current} mode="rotate" enabled={1} size={1.4} />
+          {selectedTransformControl === "move" && (
+            <TransformControls
+              ref={transformRef}
+              object={ref.current}
+              mode="translate"
+              onDragStart={() => setIsOrbitEnabled(false)}
+              onDragEnd={() => setIsOrbitEnabled(true)}
+            />
+          )}
+          {selectedTransformControl === "scale" && (
+            <TransformControls
+              ref={scaleRef}
+              object={ref.current}
+              mode="scale"
+              onDragStart={() => setIsOrbitEnabled(false)}
+              onDragEnd={() => setIsOrbitEnabled(true)}
+            />
+          )}
+          {selectedTransformControl === "rotate" && (
+            <TransformControls
+              ref={rotationRef}
+              object={ref.current}
+              mode="rotate"
+              onDragStart={() => setIsOrbitEnabled(false)}
+              onDragEnd={() => setIsOrbitEnabled(true)}
+            />
+          )}
         </>
       )}
-
     </>
   );
 };
