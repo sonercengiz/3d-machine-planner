@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Text, TransformControls } from "@react-three/drei";
 import { useMainScene } from "../context/MainSceneContext";
 import { useLoader } from '@react-three/fiber';
@@ -14,8 +14,10 @@ const Model = ({ id, path, position }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Model yükleme işlemi
-  const fbx = useLoader(FBXLoader, path);
+  // Asıl model yükleme
+  const originalFBX = useLoader(FBXLoader, path);
+  // Her bileşenin kendi kopyasını oluştur
+  const fbx = useMemo(() => originalFBX.clone(), [originalFBX]);
   // Model ayarlama
   useEffect(() => {
     try {
