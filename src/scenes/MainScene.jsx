@@ -35,6 +35,7 @@ const MainScene = () => {
       <Canvas
         shadows
         camera={{ position: [0, 5, 10] }}
+        sx={{background: "blue"}}
       >
         <SoftShadows samples={10} size={20} />
 
