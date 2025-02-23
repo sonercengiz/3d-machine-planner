@@ -1,13 +1,13 @@
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { MachineProvider } from "./context/MachineContext";
+import { MainSceneProvider } from "./context/MainSceneContext";
 import Configurator from "./pages/Configurator";
 import theme from "./theme/theme";
 import ErrorPopup from "./components/ErrorPopup";
 
 function App() {
   return (
-    <MachineProvider>
+    <MainSceneProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
@@ -17,7 +17,7 @@ function App() {
         </Router>
         <ErrorPopup />
       </ThemeProvider>
-    </MachineProvider>
+    </MainSceneProvider>
   );
 }
 

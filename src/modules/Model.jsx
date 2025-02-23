@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import { Text, TransformControls } from "@react-three/drei";
-import { useMachine } from "../context/MachineContext";
+import { useMainScene } from "../context/MainSceneContext";
 import { useLoader } from '@react-three/fiber';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
-const Model = ({ type, path, position }) => {
+const Model = ({ id, path, position }) => {
   const ref = useRef();
   const transformRef = useRef();
   const scaleRef = useRef();
-  const { setIsOrbitEnabled, isOrbitEnabled } = useMachine();
-  const [isSelected, setIsSelected] = useState(false);
+  const rotationRef = useRef();
+  const { setIsOrbitEnabled, selectedModelId, setSelectedModelId } = useMainScene();
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,8 @@ const Model = ({ type, path, position }) => {
   }, [fbx, path]);
 
   useEffect(() => {
-    if (!transformRef.current || !scaleRef.current) return;
+    if (selectedModelId !== id) return;
+    if (!transformRef.current || !scaleRef.current || !rotationRef.current) return;
 
     // Başlangıç (fare basılıp sürükleme başlayınca)
     const onTransformStart = () => {
@@ -59,16 +60,28 @@ const Model = ({ type, path, position }) => {
     scaleRef.current.addEventListener("mouseUp", onTransformEnd);
     scaleRef.current.addEventListener("change", onTransformChange);
 
-    return () => {
-      transformRef.current.removeEventListener("mouseDown", onTransformStart);
-      transformRef.current.removeEventListener("mouseUp", onTransformEnd);
-      transformRef.current.removeEventListener("change", onTransformChange);
+    rotationRef.current.addEventListener("mouseDown", onTransformStart);
+    rotationRef.current.addEventListener("mouseUp", onTransformEnd);
+    rotationRef.current.addEventListener("change", onTransformChange);
 
-      scaleRef.current.removeEventListener("mouseDown", onTransformStart);
-      scaleRef.current.removeEventListener("mouseUp", onTransformEnd);
-      scaleRef.current.removeEventListener("change", onTransformChange);
+    return () => {
+      if (transformRef.current) {
+        transformRef.current.removeEventListener("mouseDown", onTransformStart);
+        transformRef.current.removeEventListener("mouseUp", onTransformEnd);
+        transformRef.current.removeEventListener("change", onTransformChange);
+      }
+      if (scaleRef.current) {
+        scaleRef.current.removeEventListener("mouseDown", onTransformStart);
+        scaleRef.current.removeEventListener("mouseUp", onTransformEnd);
+        scaleRef.current.removeEventListener("change", onTransformChange);
+      }
+      if (rotationRef.current) {
+        rotationRef.current.removeEventListener("mouseDown", onTransformStart);
+        rotationRef.current.removeEventListener("mouseUp", onTransformEnd);
+        rotationRef.current.removeEventListener("change", onTransformChange);
+      }
     };
-  }, [isSelected]);
+  }, [selectedModelId]);
 
 
   if (loading) {
@@ -111,15 +124,16 @@ const Model = ({ type, path, position }) => {
         receiveShadow
         onClick={(e) => {
           e.stopPropagation();
-          setIsSelected(true);
+          setSelectedModelId(id)
         }}
-        onPointerMissed={() => setIsSelected(false)}
+        onPointerMissed={() => setSelectedModelId(null)}
       />
 
-      {isSelected && (
+      {(selectedModelId === id) && (
         <>
-          <TransformControls ref={transformRef} object={ref.current} mode="translate" />
-          <TransformControls ref={scaleRef} object={ref.current} mode="scale" />
+          <TransformControls ref={transformRef} object={ref.current} mode="translate" enabled={1} size={1.8} />
+          <TransformControls ref={scaleRef} object={ref.current} mode="scale" enabled={1} size={1} />
+          <TransformControls ref={rotationRef} object={ref.current} mode="rotate" enabled={1} size={1.4} />
         </>
       )}
 

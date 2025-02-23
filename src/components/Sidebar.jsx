@@ -1,15 +1,15 @@
 import { Box, Paper, Typography } from "@mui/material";
 
-const modules = [
+const models = [
   { id: "model1", name: "model", path: "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx" },
   { id: "piston", name: "piston", path: "/assets/models/piston.fbx" },
 ];
 
 const Sidebar = () => {
-  const handleDragStart = (event, module) => {
-    event.dataTransfer.setData("moduleType", module.id);
-    event.dataTransfer.setData("modelPath", module.path); // Model dosya yolunu da gönderelim
-    console.log(`Sürüklenen model: ${module.name} - Path: ${module.path}`);
+  const handleDragStart = (event, model) => {
+    event.dataTransfer.setData("modelType", model.id);
+    event.dataTransfer.setData("modelPath", model.path); // Model dosya yolunu da gönderelim
+    console.log(`Sürüklenen model: ${model.name} - Path: ${model.path}`);
   };
 
   return (
@@ -25,11 +25,11 @@ const Sidebar = () => {
       <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
         Modüller
       </Typography>
-      {modules.map((module) => (
+      {models.map((model) => (
         <Paper
-          key={module.id}
+          key={model.id}
           draggable
-          onDragStart={(event) => handleDragStart(event, module)}
+          onDragStart={(event) => handleDragStart(event, model)}
           sx={{
             p: 2,
             my: 1,
@@ -46,7 +46,7 @@ const Sidebar = () => {
           }}
         >
           <Typography variant="subtitle">
-            {module.name}
+            {model.name}
           </Typography>
         </Paper>
       ))}

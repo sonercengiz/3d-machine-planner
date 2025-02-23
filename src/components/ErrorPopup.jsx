@@ -1,8 +1,8 @@
 import { Snackbar, Alert } from "@mui/material";
-import { useMachine } from "../context/MachineContext";
+import { useMainScene } from "../context/MainSceneContext";
 
 const ErrorPopup = () => {
-    const { globalError, clearError } = useMachine();
+    const { globalError, clearError } = useMainScene();
 
     return (
         <Snackbar

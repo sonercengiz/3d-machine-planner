@@ -1,12 +1,13 @@
 import { Box, Typography } from "@mui/material";
 import Sidebar from "../components/Sidebar";
-import MachineScene from "../scenes/MachineScene";
+import MainScene from "../scenes/MainScene";
+import ModelInfoCard from "../components/ModelInfoCard";
 
 const Configurator = () => {
   return (
     <Box sx={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* 3D Sahne Tüm Ekranı Kaplayacak */}
-      <MachineScene />
+      <MainScene />
 
       {/* Sidebar Overlay gibi Üstte Duracak */}
       <Box
@@ -25,9 +26,7 @@ const Configurator = () => {
         right: 20, // Sidebar'ı sol üst köşeye sabitle
         zIndex: 1, // Üstte görünmesini sağla
       }}>
-        <Typography variant="subtitle">
-          slm askolarrrrrr
-        </Typography>
+        <ModelInfoCard />
       </Box>
 
     </Box>

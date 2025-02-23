@@ -2,12 +2,11 @@ import * as THREE from 'three'
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, SoftShadows, GizmoHelper, GizmoViewport } from "@react-three/drei";
 import { useState, useCallback, useEffect, Suspense } from "react";
-import Module from "../modules/Model";
-import { useMachine } from "../context/MachineContext";
+import Model from "../modules/Model";
+import { useMainScene } from '../context/MainSceneContext';
 
-const MachineScene = () => {
-  const [modules, setModules] = useState([]);
-  const { isOrbitEnabled } = useMachine();
+const MainScene = () => {
+  const { models, addModel, isOrbitEnabled } = useMainScene();
 
   const handleDrop = useCallback(async (event) => {
     event.preventDefault();
@@ -18,10 +17,7 @@ const MachineScene = () => {
       const response = await fetch(modelPath);
       if (!response.ok) throw new Error("Dosya bulunamadı");
 
-      setModules((prev) => [
-        ...prev,
-        { id: Date.now(), path: modelPath, position: [0, 0, 0] }
-      ]);
+      addModel({ path: modelPath, position: [0, 0, 0] });
     } catch (err) {
       console.error("Model eklenemedi:", err);
       // Hata popup'ı tetikle (MachineContext üzerinden)
@@ -79,11 +75,12 @@ const MachineScene = () => {
         <Suspense fallback={
           null
         }>
-          {modules.map((mod) => (
-            <Module
-              key={`${mod.id}-${mod.path}`} // Path değişikliklerini takip etmek için
-              path={mod.path}
-              position={mod.position}
+          {models.map((model) => (
+            <Model
+              key={model.id} // Path değişikliklerini takip etmek için
+              id={model.id}
+              path={model.path}
+              position={model.position}
             />
           ))}
         </Suspense>
@@ -92,4 +89,4 @@ const MachineScene = () => {
   );
 };
 
-export default MachineScene;
+export default MainScene;
