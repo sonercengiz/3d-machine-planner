@@ -1,9 +1,11 @@
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Divider, Paper, Typography } from '@mui/material';
 import React from 'react'
 import { useMainScene } from '../context/MainSceneContext';
+import Grid from '@mui/material/Grid2';
 
-const ModelInfoCard = ({ id, modelName }) => {
-    const { models, } = useMainScene()
+const ModelInfoCard = () => {
+    const { models, selectedModelId } = useMainScene()
+
     return (
         <Box
             sx={{
@@ -12,36 +14,39 @@ const ModelInfoCard = ({ id, modelName }) => {
                 right: 0,
                 zIndex: 1,
                 width: 220,
+                minHeight: 400,
                 bgcolor: "rgba(0, 0, 0, 0.8)",
-                p: 2,
+                p: 0,
                 m: 2,
                 borderRadius: 2,
-                color: "white",
+                color: "#E8E8E8",
             }}
         >
-            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", textAlign: "center" }}>
-                {modelName}
-            </Typography>
-            <Paper
-                sx={{
-                    p: 2,
-                    my: 1,
-                    textAlign: "center",
-                    bgcolor: "rgba(255, 255, 255, 0.1)",
-                    color: "white",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                    borderRadius: 1,
-                    transition: "all 0.2s",
-                    "&:hover": {
-                        bgcolor: "rgba(255, 255, 255, 0.2)",
-                    },
-                }}
-            >
-                <Typography variant="subtitle">
-                    {id}
+            <Box sx={{px: 2, pt: 2}}>
+                <Typography variant="subtitle" sx={{ fontWeight: "bold", textAlign: "center" }}>
+                    Model Info
                 </Typography>
-            </Paper>
+            </Box>
 
+
+            <Divider sx={{ background: "#AAAAAA", my: 1 }} component="div" />
+
+
+            <Grid container spacing={0} sx={{ px: 2 }}>
+                <Grid size={12}>
+                    <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Model ID: 312421312</Typography>
+                </Grid>
+                <Grid size={12}>
+                    <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Width: 1.003 m</Typography>
+                </Grid>
+                <Grid size={12}>
+                    <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Height: 1.123 m</Typography>
+                </Grid>
+                <Grid size={12}>
+                    <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Depth: 1.245 m</Typography>
+                </Grid>
+
+            </Grid>
         </Box>
     );
 }

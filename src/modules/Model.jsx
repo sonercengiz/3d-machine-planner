@@ -3,6 +3,7 @@ import { Text, TransformControls } from "@react-three/drei";
 import { useMainScene } from "../context/MainSceneContext";
 import { useLoader } from '@react-three/fiber';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { Box3, Vector3, BoxHelper, LineSegments } from 'three';
 
 const Model = ({ id, path, position }) => {
   const ref = useRef();
@@ -13,18 +14,27 @@ const Model = ({ id, path, position }) => {
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0, depth: 0 });
+  const [boxHelper, setBoxHelper] = useState(null);
 
-  // Asıl model yükleme
+  // Modeli yükle
   const originalFBX = useLoader(FBXLoader, path);
-  // Her bileşenin kendi kopyasını oluştur
   const fbx = useMemo(() => originalFBX.clone(), [originalFBX]);
-  // Model ayarlama
+
   useEffect(() => {
     try {
       if (fbx) {
         console.log(`🎉 Model yüklendi: ${path}`);
-        setModel(fbx.scene || fbx.children[0] || fbx);
+        const loadedModel = fbx.scene || fbx.children[0] || fbx;
+        setModel(loadedModel);
         setLoading(false);
+
+        // Modelin Bounding Box'ını hesapla
+        updateDimensions(loadedModel);
+
+        // BoxHelper oluştur
+        const helper = new BoxHelper(loadedModel, 0xffff00); // Sarı renkte bir kutu
+        setBoxHelper(helper);
       }
     } catch (err) {
       console.error(`❌ Yükleme hatası: ${path}`, err);
@@ -33,16 +43,35 @@ const Model = ({ id, path, position }) => {
     }
   }, [fbx, path]);
 
+  const updateDimensions = (model) => {
+    const box = new Box3().setFromObject(model);
+    const size = new Vector3();
+    box.getSize(size);
 
+    // 1 birim = 1 metre olarak kabul edildi
+    const scaleFactor = 1;
 
-    useEffect(() => {
+    setDimensions({
+      width: size.x * scaleFactor,
+      height: size.y * scaleFactor,
+      depth: size.z * scaleFactor,
+    });
+
+    console.log({
+      width: size.x * scaleFactor,
+      height: size.y * scaleFactor,
+      depth: size.z * scaleFactor,
+    })
+  };
+
+  useEffect(() => {
     if (selectedModelId !== id) return;
-    
-    const currentControl = 
+
+    const currentControl =
       selectedTransformControl === "move" ? transformRef :
-      selectedTransformControl === "scale" ? scaleRef :
-      selectedTransformControl === "rotate" ? rotationRef :
-      null;
+        selectedTransformControl === "scale" ? scaleRef :
+          selectedTransformControl === "rotate" ? rotationRef :
+            null;
 
     if (!currentControl?.current) return;
 
@@ -50,22 +79,26 @@ const Model = ({ id, path, position }) => {
       setIsOrbitEnabled(!event.value);
     };
 
+    const onChange = () => {
+      updateDimensions(ref.current);
+      if (boxHelper) {
+        boxHelper.update(); // BoxHelper'ı güncelle
+      }
+    };
+    onChange();
+
     currentControl.current.addEventListener("dragging-changed", onDraggingChanged);
+    currentControl.current.addEventListener("objectChange", onChange);
 
     return () => {
       currentControl.current?.removeEventListener("dragging-changed", onDraggingChanged);
+      currentControl.current?.removeEventListener("objectChange", onChange);
     };
-  }, [selectedModelId, selectedTransformControl, id, setIsOrbitEnabled]);
+  }, [selectedModelId, selectedTransformControl, id, setIsOrbitEnabled, boxHelper]);
 
   if (loading) {
     return (
-      <Text
-        position={[0, 0, 0]} // Metnin sahnedeki konumu
-        fontSize={0.5} // Metnin boyutu
-        color="white" // Metnin rengi
-        anchorX="center" // Yatay hizalama
-        anchorY="middle" // Dikey hizalama
-      >
+      <Text position={[0, 0, 0]} fontSize={0.5} color="white">
         Loading
       </Text>
     );
@@ -90,14 +123,19 @@ const Model = ({ id, path, position }) => {
       <primitive
         ref={ref}
         object={model}
-        scale={[1,1,1]}
+        scale={[1, 1, 1]}
         position={position}
         onClick={(e) => {
           e.stopPropagation();
-          setSelectedModelId(id)
+          setSelectedModelId(id);
         }}
         onPointerMissed={() => setSelectedModelId(null)}
       />
+
+      {/* Bounding Box Gösterimi */}
+      {selectedModelId === id && boxHelper && (
+        <primitive object={boxHelper} />
+      )}
 
       {selectedModelId === id && (
         <>

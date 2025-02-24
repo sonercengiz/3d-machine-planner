@@ -35,7 +35,7 @@ const MainScene = () => {
       <Canvas
         shadows
         camera={{ position: [0, 5, 10] }}
-        sx={{background: "blue"}}
+        style={{ background: "#C4C4C4" }}
       >
         <SoftShadows samples={10} size={20} />
 
@@ -63,7 +63,7 @@ const MainScene = () => {
           }} />
 
         {/* Izgara çizgileri */}
-        <gridHelper args={[20, 20]} />
+        <gridHelper args={[100, 100]} />
 
         {/* Özel HDRI Laboratuvar Arka Planı */}
         {/* <Environment files="/assets/hdr/vintage_measuring_lab_1k.hdr" background /> */}

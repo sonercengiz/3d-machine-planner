@@ -4,8 +4,7 @@ import CustomIcon from './CustomIcon';
 import { useMainScene } from '../context/MainSceneContext';
 
 const Toolbar = () => {
-    const [toolBarVisibility, setToolBarVisibility] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const { selectedTransformControl, setSelectedTransformControl, selectedModelId } = useMainScene();
 
     const circleButtonSx = (index) => ({
@@ -17,88 +16,64 @@ const Toolbar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        border: selectedIndex === index ? '2px solid #2C99FF' : 'none', // Seçili butonun dış çizgisi mavi
-        backgroundColor: selectedIndex === index ? 'black' : 'default', // Seçili butonun rengi siyah
+        border: selectedIndex === index ? '2px solid #2C99FF' : 'none',
+        backgroundColor: selectedIndex === index ? 'black' : 'default',
         '&:hover': {
-            backgroundColor: 'black', // Hover durumunda arka plan rengi siyah
+            backgroundColor: 'black',
         },
     });
 
     useEffect(() => {
         switch (selectedTransformControl) {
-            case "move":
+            case "cursor":
                 setSelectedIndex(0);
                 break;
-            case "scale":
+            case "selection":
                 setSelectedIndex(1);
                 break;
-            case "rotate":
-                setSelectedIndex(2);
-                break;
             default:
-                setSelectedIndex(null);
+                setSelectedIndex(0);
                 break;
         }
     }, [selectedTransformControl]);
 
-    useEffect(() => {
-        if (selectedModelId === null) {
-            setToolBarVisibility(false);
-        } else {
-            setToolBarVisibility(true);
-        }
-    }, [selectedModelId]);
-
     const handleClick = (index, type) => {
         setSelectedIndex(index);
-        setSelectedTransformControl(type);
     };
 
     return (
-        <Fade in={toolBarVisibility} timeout={500}>
-            {/* Paper component'ini her zaman render et, ancak görünürlüğünü Fade component'i kontrol etsin. */}
-            <Paper
-                sx={{
-                    position: 'absolute',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    top: 0,
-                    left: '50%',
-                    transform: 'translate(-50%, 0)',
-                    m: 2,
-                    p: '10px',
-                    borderRadius: '10px',
-                    bgcolor: '#000000CC',
-                    color: 'white',
-                    visibility: toolBarVisibility ? 'visible' : 'hidden', // Görünürlüğü kontrol et
-                }}
+        <Paper
+            sx={{
+                position: 'absolute',
+                display: 'flex',
+                justifyContent: 'center',
+                top: 0,
+                left: '50%',
+                transform: 'translate(-50%, 0)',
+                m: 2,
+                p: '10px',
+                borderRadius: '10px',
+                bgcolor: '#000000CC',
+                color: 'white',
+            }}
+        >
+            <Button
+                variant="contained"
+                size="small"
+                sx={circleButtonSx(0)}
+                onClick={() => handleClick(0, "move")}
             >
-                <Button
-                    variant="contained"
-                    size="small"
-                    sx={circleButtonSx(0)}
-                    onClick={() => handleClick(0, "move")}
-                >
-                    <CustomIcon src="/icons/move.svg" style={{ width: '24px', height: '24px' }} />
-                </Button>
-                <Button
-                    variant="contained"
-                    size="small"
-                    sx={circleButtonSx(1)}
-                    onClick={() => handleClick(1, "scale")}
-                >
-                    <CustomIcon src="/icons/scaling.svg" style={{ width: '16px', height: '16px' }} />
-                </Button>
-                <Button
-                    variant="contained"
-                    size="small"
-                    sx={circleButtonSx(2)}
-                    onClick={() => handleClick(2, "rotate")}
-                >
-                    <CustomIcon src="/icons/rotation.svg" style={{ width: '24px', height: '24px' }} />
-                </Button>
-            </Paper>
-        </Fade>
+                <CustomIcon src="/icons/cursor.svg" style={{ width: '24px', height: '24px' }} />
+            </Button>
+            <Button
+                variant="contained"
+                size="small"
+                sx={circleButtonSx(1)}
+                onClick={() => handleClick(1, "scale")}
+            >
+                <CustomIcon src="/icons/selection.svg" style={{ width: '16px', height: '16px' }} />
+            </Button>
+        </Paper>
     );
 };
 
