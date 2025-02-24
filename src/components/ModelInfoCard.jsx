@@ -40,7 +40,7 @@ const ModelInfoCard = () => {
                     <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Width: 1.003 m</Typography>
                 </Grid>
                 <Grid size={12}>
-                    <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Height: 1.123 m</Typography>
+                    <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Height: 1.124 m</Typography>
                 </Grid>
                 <Grid size={12}>
                     <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Depth: 1.245 m</Typography>
