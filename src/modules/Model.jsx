@@ -10,7 +10,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
   const transformRef = useRef();
   const scaleRef = useRef();
   const rotationRef = useRef();
-  const { setIsOrbitEnabled, selectedModelId, setSelectedModelId, selectedTransformControl } = useMainScene();
+  const { setIsOrbitEnabled, selectedModelId, setSelectedModelId, selectedTransformControl, setSelectedModelDimensions } = useMainScene();
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
 
         // Modelin Bounding Box'ını hesapla
         updateDimensions(loadedModel);
-        
+
         // BoxHelper oluştur
         const helper = new BoxHelper(loadedModel, 0xffff00); // Sarı renkte bir kutu
         setBoxHelper(helper);
@@ -45,7 +45,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
     const box = new Box3().setFromObject(model);
     const size = new Vector3();
     box.getSize(size);
-    
+
     // 1 birim = 1 metre olarak kabul edildi
     const scaleFactor = 1;
 
@@ -54,22 +54,20 @@ const Model = ({ id, path, position, scale, rotation }) => {
       height: size.y * scaleFactor,
       depth: size.z * scaleFactor,
     });
-
-    console.log({
-      width: size.x * scaleFactor,
-      height: size.y * scaleFactor,
-      depth: size.z * scaleFactor,
-    })
   });
 
   useEffect(() => {
+    setSelectedModelDimensions(dimensions);
+  }, [dimensions]);
+
+  useEffect(() => {
     if (selectedModelId !== id) return;
-    
-    const currentControl = 
+
+    const currentControl =
       selectedTransformControl === "move" ? transformRef :
-      selectedTransformControl === "scale" ? scaleRef :
-      selectedTransformControl === "rotate" ? rotationRef :
-      null;
+        selectedTransformControl === "scale" ? scaleRef :
+          selectedTransformControl === "rotate" ? rotationRef :
+            null;
 
     if (!currentControl?.current) return;
 
@@ -78,6 +76,9 @@ const Model = ({ id, path, position, scale, rotation }) => {
     };
 
     const onChange = () => {
+      if (selectedTransformControl === "scale") {
+        updateDimensions(ref.current);
+      }
       updateDimensions(ref.current);
       if (boxHelper) {
         boxHelper.update(); // BoxHelper'ı güncelle

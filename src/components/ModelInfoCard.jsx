@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid2';
 
 const ModelInfoCard = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const { models, selectedModelId } = useMainScene();
+    const { models, selectedModelId, selectedModelDimensions } = useMainScene();
 
     useEffect(() => {
         if (selectedModelId === null) {
@@ -49,13 +49,13 @@ const ModelInfoCard = () => {
                         <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Model ID: {selectedModelId}</Typography>
                     </Grid>
                     <Grid size={12}>
-                        <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Width: 1.003 m</Typography>
+                        <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Width: {selectedModelDimensions?.width.toFixed(2)} m</Typography>
                     </Grid>
                     <Grid size={12}>
-                        <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Height: 1.124 m</Typography>
+                        <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Height: {selectedModelDimensions?.height.toFixed(2)} m</Typography>
                     </Grid>
                     <Grid size={12}>
-                        <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Depth: 1.245 m</Typography>
+                        <Typography variant="caption" gutterBottom sx={{ display: 'block' }}>Depth: {selectedModelDimensions?.depth.toFixed(2)} m</Typography>
                     </Grid>
 
                 </Grid>

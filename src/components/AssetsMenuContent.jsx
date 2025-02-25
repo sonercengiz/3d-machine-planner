@@ -60,7 +60,7 @@ const AssetsMenuContent = () => {
 
                 </Paper>
             ))}
-            <hr />
+            {/* <hr />
             <Box display={"flex"} justifyContent={"space-evenly"}>
                 <Button variant="contained" size="small" onClick={saveCurrentAssembly}>
                     Kaydet
@@ -68,7 +68,7 @@ const AssetsMenuContent = () => {
                 <Button variant="contained" size="small" onClick={loadAssemblyFromFile}>
                     Yükle
                 </Button>
-            </Box>
+            </Box> */}
         </>
     )
 }

@@ -6,12 +6,13 @@ const MainSceneContext = createContext();
 export const MainSceneProvider = ({ children }) => {
   const [models, setModels] = useState([]);
   const [selectedModelId, setSelectedModelId] = useState(null);
+  const [selectedModelDimensions, setSelectedModelDimensions] = useState(null);
   const [isOrbitEnabled, setIsOrbitEnabled] = useState(true); // OrbitControls yönetimi
   const [selectedTransformControl, setSelectedTransformControl] = useState("move"); // move, rotate, scale
   const [globalError, setGlobalError] = useState(null);
 
-  const addModel = ({ id, name, path, position }) => {
-    setModels((prev) => [...prev, { id: `${Date.now()};${id}`, name, path, position }]);
+  const addModel = ({ id, name, path, position = [0,0,0], scale = [1,1,1], rotation=[0,0,0] }) => {
+    setModels((prev) => [...prev, { id: `${Date.now()};${id}`, name, path, position, scale, rotation }]);
   };
 
   // Service Katmanı: Kaydet
@@ -63,7 +64,9 @@ export const MainSceneProvider = ({ children }) => {
       setGlobalError,
       clearError,
       saveCurrentAssembly,        // <-- export ettiğimiz yeni fonksiyon
-      loadAssemblyFromFile       // <-- export ettiğimiz yeni fonksiyon
+      loadAssemblyFromFile,       // <-- export ettiğimiz yeni fonksiyon
+      selectedModelDimensions,
+      setSelectedModelDimensions
     }}>
       {children}
     </MainSceneContext.Provider>
