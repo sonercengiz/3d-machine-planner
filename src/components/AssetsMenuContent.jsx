@@ -4,8 +4,17 @@ import { useMainScene } from '../context/MainSceneContext';
 import axios from "axios";
 
 const AssetsMenuContent = () => {
-    const [models, setModels] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [models, setModels] = useState([{
+        "id": "model",
+        "name": "Test Model",
+        "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
+      },
+      {
+        "id": "shelf",
+        "name": "Shelf",
+        "path": "/assets/models/shelf.fbx"
+      }]);
+    const [loading, setLoading] = useState(false);
     const { saveCurrentAssembly, loadAssemblyFromFile } = useMainScene();
 
     const handleDragStart = (event, model) => {
@@ -14,14 +23,14 @@ const AssetsMenuContent = () => {
         event.dataTransfer.setData("modelPath", model.path);
     };
 
-    useEffect(() => {
-        axios.get("/api/json/models")
-            .then(response => {
-                setModels(response.data)
-                setLoading(false)
-            })
-            .catch(error => console.error("Error fetching data:", error));
-    }, []);
+    // useEffect(() => {
+    //     axios.get("/api/json/models")
+    //         .then(response => {
+    //             setModels(response.data)
+    //             setLoading(false)
+    //         })
+    //         .catch(error => console.error("Error fetching data:", error));
+    // }, []);
 
     if (loading) {
         return (
