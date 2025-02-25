@@ -25,8 +25,8 @@ const AssetsMenuContent = () => {
 
     if (loading) {
         return (
-            <Box
-            ><CircularProgress />
+            <Box justifyContent="center" display="flex">
+                <CircularProgress />
             </Box>
         )
     }
