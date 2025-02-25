@@ -60,7 +60,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
       height: size.y * scaleFactor,
       depth: size.z * scaleFactor,
     })
-  };
+  });
 
   useEffect(() => {
     if (selectedModelId !== id) return;
