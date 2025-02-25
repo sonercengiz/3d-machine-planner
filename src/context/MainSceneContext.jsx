@@ -53,7 +53,6 @@ export const MainSceneProvider = ({ children }) => {
     <MainSceneContext.Provider value={{
       models,
       addModel,
-      updateModelDimensions,
       selectedModelId,
       setSelectedModelId,
       isOrbitEnabled,
