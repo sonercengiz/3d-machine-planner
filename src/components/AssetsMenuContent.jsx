@@ -15,7 +15,7 @@ const AssetsMenuContent = () => {
     };
 
     useEffect(() => {
-        axios.get("http://localhost:3001/models")
+        axios.get("/api/json/models")
             .then(response => {
                 setModels(response.data)
                 setLoading(false)
