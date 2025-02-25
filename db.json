@@ -1,39 +1,14 @@
 {
     "models": [
         {
-            "id": "model1",
-            "name": "model",
+            "id": "model",
+            "name": "Test Model",
             "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
         },
         {
-            "id": "model2",
-            "name": "model",
-            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
-        },
-        {
-            "id": "model3",
-            "name": "model",
-            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
-        },
-        {
-            "id": "model4",
-            "name": "model",
-            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
-        },
-        {
-            "id": "model5",
-            "name": "model",
-            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
-        },
-        {
-            "id": "model6",
-            "name": "model",
-            "path": "/assets/models/8e1fcf55-8fa2-4fc7-a917-ef6c8c836b5e.fbx"
-        },
-        {
-            "id": "piston",
-            "name": "piston",
-            "path": "/assets/models/piston.fbx"
+            "id": "shelf",
+            "name": "Shelf",
+            "path": "/assets/models/shelf.fbx"
         }
     ],
     "assemblies": [

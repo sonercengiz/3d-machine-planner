@@ -5,7 +5,7 @@ import { useLoader } from '@react-three/fiber';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { Box3, Vector3, BoxHelper, LineSegments } from 'three';
 
-const Model = ({ id, path, position }) => {
+const Model = ({ id, path, position, scale, rotation }) => {
   const ref = useRef();
   const transformRef = useRef();
   const scaleRef = useRef();
@@ -24,30 +24,28 @@ const Model = ({ id, path, position }) => {
   useEffect(() => {
     try {
       if (fbx) {
-        console.log(`🎉 Model yüklendi: ${path}`);
         const loadedModel = fbx.scene || fbx.children[0] || fbx;
         setModel(loadedModel);
         setLoading(false);
 
         // Modelin Bounding Box'ını hesapla
         updateDimensions(loadedModel);
-
+        
         // BoxHelper oluştur
         const helper = new BoxHelper(loadedModel, 0xffff00); // Sarı renkte bir kutu
         setBoxHelper(helper);
       }
     } catch (err) {
-      console.error(`❌ Yükleme hatası: ${path}`, err);
       setError(err);
       setLoading(false);
     }
   }, [fbx, path]);
 
-  const updateDimensions = (model) => {
+  const updateDimensions = useMemo(() => (model) => {
     const box = new Box3().setFromObject(model);
     const size = new Vector3();
     box.getSize(size);
-
+    
     // 1 birim = 1 metre olarak kabul edildi
     const scaleFactor = 1;
 
@@ -66,12 +64,12 @@ const Model = ({ id, path, position }) => {
 
   useEffect(() => {
     if (selectedModelId !== id) return;
-
-    const currentControl =
+    
+    const currentControl = 
       selectedTransformControl === "move" ? transformRef :
-        selectedTransformControl === "scale" ? scaleRef :
-          selectedTransformControl === "rotate" ? rotationRef :
-            null;
+      selectedTransformControl === "scale" ? scaleRef :
+      selectedTransformControl === "rotate" ? rotationRef :
+      null;
 
     if (!currentControl?.current) return;
 
@@ -123,8 +121,9 @@ const Model = ({ id, path, position }) => {
       <primitive
         ref={ref}
         object={model}
-        scale={[1, 1, 1]}
+        scale={scale}
         position={position}
+        rotation={rotation}
         onClick={(e) => {
           e.stopPropagation();
           setSelectedModelId(id);

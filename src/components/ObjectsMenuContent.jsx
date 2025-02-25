@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import { useMainScene } from '../context/MainSceneContext'
-import { Collapse, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Paper, Typography } from '@mui/material'
+import { Box, Collapse, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Paper, Typography } from '@mui/material'
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import { AddCircle } from '@mui/icons-material';
+import Grid from '@mui/material/Grid2';
 const ObjectsMenuContent = () => {
     const { models, selectedModelId, setSelectedModelId } = useMainScene()
 
@@ -15,40 +17,52 @@ const ObjectsMenuContent = () => {
     //     setOpen(!open);
     // };
 
-    useEffect(() => {
-        console.log(models);
+    if (models.length === 0) {
+        return <>
+            <Grid container spacing={1} sx={{ px: 2, color: "#e6e6e6", mt: 4 }}>
+                <Grid item size={12} sx={{display: "flex", justifyContent: "center"}}>
+                    <Typography variant='caption' component="a" sx={{ fontSize: "10px", bgcolor: "inherit" }}>
+                        Click `Assets` tab to add model
+                    </Typography>
+                </Grid>
+                <Grid item size={12} sx={{display: "flex", justifyContent: "center"}}>
+                    <AddCircle />
+                </Grid>
 
-    }, [models]);
-    return (
-        <>
-            <List
-                sx={{
-                    width: "100%",
-                    maxWidth: 360,
-                    color: "#FFFFFF",
-                    fontSize: "12px",
-                }}
-                component="nav"
-                subheader={
-                    <ListSubheader sx={{ fontSize: "10px", color: "#FFF", bgcolor: "inherit" }}>
-                        Model List in the Scene
-                    </ListSubheader>
-                }
-            >
-                {models.map((model, index) => (
-                    <ListItemButton
-                        key={index}
-                        sx={{ background: selectedModelId === model.id ? "#000" : "inherit" }}
-                        onClick={(e) => handleClick(model.id)}
-                    >
-                        <ListItemIcon sx={{ color: "#FFF" }}>
-                            <ViewInArIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={model.name} primaryTypographyProps={{ fontSize: "12px" }} />
-                    </ListItemButton>
-                ))}
+            </Grid>
+        </>
+    }
 
-                {/* <ListItemButton onClick={handleClick}>
+return (
+    <>
+        <List
+            sx={{
+                width: "100%",
+                maxWidth: 360,
+                color: "#FFFFFF",
+                fontSize: "12px",
+            }}
+            component="nav"
+            subheader={
+                <ListSubheader sx={{ fontSize: "10px", color: "#FFF", bgcolor: "inherit" }}>
+                    Model List in the Scene
+                </ListSubheader>
+            }
+        >
+            {models.map((model, index) => (
+                <ListItemButton
+                    key={index}
+                    sx={{ background: selectedModelId === model.id ? "#000" : "inherit" }}
+                    onClick={(e) => handleClick(model.id)}
+                >
+                    <ListItemIcon sx={{ color: "#FFF" }}>
+                        <ViewInArIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={model.name} primaryTypographyProps={{ fontSize: "12px" }} />
+                </ListItemButton>
+            ))}
+
+            {/* <ListItemButton onClick={handleClick}>
                     <ListItemIcon sx={{ color: "#FFF" }}>
                         <InboxIcon />
                     </ListItemIcon>
@@ -66,9 +80,9 @@ const ObjectsMenuContent = () => {
                         </ListItemButton>
                     </List>
                 </Collapse> */}
-            </List>
-        </>
-    )
+        </List>
+    </>
+)
 }
 
 export default ObjectsMenuContent

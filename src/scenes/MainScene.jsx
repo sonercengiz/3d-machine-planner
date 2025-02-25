@@ -19,7 +19,7 @@ const MainScene = () => {
       const response = await fetch(modelPath);
       if (!response.ok) throw new Error("Dosya bulunamadı");
 
-      addModel({ id: modelId, name: modelName, path: modelPath, position: [0, 0, 0] });
+      addModel({ id: modelId, name: modelName, path: modelPath });
     } catch (err) {
       console.error("Model eklenemedi:", err);
       // Hata popup'ı tetikle (MachineContext üzerinden)
@@ -84,6 +84,8 @@ const MainScene = () => {
               id={model.id}
               path={model.path}
               position={model.position}
+              scale={model.scale}
+              rotation={model.rotation}
             />
           ))}
         </Suspense>
