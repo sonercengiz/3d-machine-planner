@@ -5,18 +5,18 @@ import ModelInfoCard from "../components/ModelInfoCard";
 import TransformControlBar from "../components/TransformControlBar";
 import Toolbar from "../components/Toolbar";
 
-const Configurator = () => {
+const FactoryPage = () => {
   return (
     <Box sx={{ position: "relative", width: "100vw", height: "100vh" }}>
       <MainScene />
 
       <Sidebar />
       <ModelInfoCard />
-      <TransformControlBar/>
-      <Toolbar/>
+      <TransformControlBar />
+      <Toolbar />
 
     </Box>
   );
 };
 
-export default Configurator;
+export default FactoryPage;
