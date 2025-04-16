@@ -76,12 +76,22 @@ const Model = ({ id, path, position, scale, rotation }) => {
     };
 
     const onChange = () => {
-      if (selectedTransformControl === "scale") {
-        updateDimensions(ref.current);
+      if (ref.current) {
+        // Modelin bounding box'ını hesapla
+        const box = new Box3().setFromObject(ref.current);
+
+        // Eğer modelin en düşük noktası (box.min.y) 0'ın altındaysa:
+        if (box.min.y < 0) {
+          // Modelin y pozisyonunu, kutunun en alt noktasını XZ düzeyine getirecek şekilde ayarla.
+          // Yani, eksi olan min.y değeri kadar yukarı taşı.
+          ref.current.position.y += -box.min.y;
+        }
       }
+
+      // Diğer güncellemeler (örneğin, ölçü güncellemesi ve BoxHelper'ın yenilenmesi)
       updateDimensions(ref.current);
       if (boxHelper) {
-        boxHelper.update(); // BoxHelper'ı güncelle
+        boxHelper.update();
       }
     };
     onChange();
@@ -94,6 +104,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
       currentControl.current?.removeEventListener("objectChange", onChange);
     };
   }, [selectedModelId, selectedTransformControl, id, setIsOrbitEnabled, boxHelper]);
+
 
   if (loading) {
     return (
@@ -146,6 +157,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
               mode="translate"
               onDragStart={() => setIsOrbitEnabled(false)}
               onDragEnd={() => setIsOrbitEnabled(true)}
+              showY={false}
             />
           )}
           {selectedTransformControl === "scale" && (
