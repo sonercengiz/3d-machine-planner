@@ -1,16 +1,23 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import { Text, TransformControls } from "@react-three/drei";
 import { useMainScene } from "../context/MainSceneContext";
-import { useLoader } from '@react-three/fiber';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { Box3, Vector3, BoxHelper, LineSegments } from 'three';
+import { useLoader } from "@react-three/fiber";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { Box3, Vector3, BoxHelper } from "three";
 
 const Model = ({ id, path, position, scale, rotation }) => {
   const ref = useRef();
   const transformRef = useRef();
   const scaleRef = useRef();
   const rotationRef = useRef();
-  const { setIsOrbitEnabled, selectedModelId, setSelectedModelId, selectedTransformControl, setSelectedModelDimensions } = useMainScene();
+  const {
+    setIsOrbitEnabled,
+    selectedModelId,
+    setSelectedModelId,
+    selectedTransformControl,
+    setSelectedModelDimensions,
+  } = useMainScene();
+
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,90 +28,96 @@ const Model = ({ id, path, position, scale, rotation }) => {
   const originalFBX = useLoader(FBXLoader, path);
   const fbx = useMemo(() => originalFBX.clone(), [originalFBX]);
 
+  // updateDimensions fonksiyonunu useMemo ile tanımlıyoruz
+  const updateDimensions = useMemo(() => (obj) => {
+    const box = new Box3().setFromObject(obj);
+    const size = new Vector3();
+    box.getSize(size);
+    const scaleFactor = 1;
+    setDimensions({
+      width: size.x * scaleFactor,
+      height: size.y * scaleFactor,
+      depth: size.z * scaleFactor,
+    });
+  }, []);
+
+  useEffect(() => {
+    setSelectedModelDimensions(dimensions);
+  }, [dimensions, setSelectedModelDimensions]);
+
   useEffect(() => {
     try {
       if (fbx) {
         const loadedModel = fbx.scene || fbx.children[0] || fbx;
         setModel(loadedModel);
         setLoading(false);
-
-        // Modelin Bounding Box'ını hesapla
+        // İlk hesaplama: Bounding Box hesaplayıp ölçüleri güncelle
         updateDimensions(loadedModel);
-
         // BoxHelper oluştur
-        const helper = new BoxHelper(loadedModel, 0xffff00); // Sarı renkte bir kutu
+        const helper = new BoxHelper(loadedModel, 0xffff00);
         setBoxHelper(helper);
       }
     } catch (err) {
       setError(err);
       setLoading(false);
     }
-  }, [fbx, path]);
+  }, [fbx, path, updateDimensions]);
 
-  const updateDimensions = useMemo(() => (model) => {
-    const box = new Box3().setFromObject(model);
-    const size = new Vector3();
-    box.getSize(size);
-
-    // 1 birim = 1 metre olarak kabul edildi
-    const scaleFactor = 1;
-
-    setDimensions({
-      width: size.x * scaleFactor,
-      height: size.y * scaleFactor,
-      depth: size.z * scaleFactor,
-    });
-  });
-
-  useEffect(() => {
-    setSelectedModelDimensions(dimensions);
-  }, [dimensions]);
-
+  // Seçili model üzerinde TransformControls eventlerini throttle ederek çalıştırıyoruz
   useEffect(() => {
     if (selectedModelId !== id) return;
 
     const currentControl =
-      selectedTransformControl === "move" ? transformRef :
-        selectedTransformControl === "scale" ? scaleRef :
-          selectedTransformControl === "rotate" ? rotationRef :
-            null;
+      selectedTransformControl === "move"
+        ? transformRef
+        : selectedTransformControl === "scale"
+          ? scaleRef
+          : selectedTransformControl === "rotate"
+            ? rotationRef
+            : null;
 
     if (!currentControl?.current) return;
+
+    // Throttle için bayrak
+    let isThrottled = false;
+    let throttleTimeout = null;
+
+    const onChangeThrottled = () => {
+      if (throttleTimeout) return;
+      throttleTimeout = setTimeout(() => {
+        if (ref.current) {
+          const box = new Box3().setFromObject(ref.current);
+          if (box.min.y < 0) {
+            ref.current.position.y += -box.min.y;
+          }
+          if (box.max.y > 10) {
+            const offset = box.max.y - 10;
+            ref.current.position.y -= offset;
+          }
+          updateDimensions(ref.current);
+          if (boxHelper) {
+            boxHelper.update();
+          }
+        }
+        throttleTimeout = null;
+      }, 1);  // Buradaki 10 milisaniye throttle süresi
+    };
 
     const onDraggingChanged = (event) => {
       setIsOrbitEnabled(!event.value);
     };
 
-    const onChange = () => {
-      if (ref.current) {
-        // Modelin bounding box'ını hesapla
-        const box = new Box3().setFromObject(ref.current);
-
-        // Eğer modelin en düşük noktası (box.min.y) 0'ın altındaysa:
-        if (box.min.y < 0) {
-          // Modelin y pozisyonunu, kutunun en alt noktasını XZ düzeyine getirecek şekilde ayarla.
-          // Yani, eksi olan min.y değeri kadar yukarı taşı.
-          ref.current.position.y += -box.min.y;
-        }
-      }
-
-      // Diğer güncellemeler (örneğin, ölçü güncellemesi ve BoxHelper'ın yenilenmesi)
-      updateDimensions(ref.current);
-      if (boxHelper) {
-        boxHelper.update();
-      }
-    };
-    onChange();
+    // İlk çalıştırma: Hızlıca güncelle
+    onChangeThrottled();
 
     currentControl.current.addEventListener("dragging-changed", onDraggingChanged);
-    currentControl.current.addEventListener("objectChange", onChange);
+    currentControl.current.addEventListener("objectChange", onChangeThrottled);
 
     return () => {
       currentControl.current?.removeEventListener("dragging-changed", onDraggingChanged);
-      currentControl.current?.removeEventListener("objectChange", onChange);
+      currentControl.current?.removeEventListener("objectChange", onChangeThrottled);
     };
-  }, [selectedModelId, selectedTransformControl, id, setIsOrbitEnabled, boxHelper]);
-
+  }, [selectedModelId, selectedTransformControl, id, setIsOrbitEnabled, boxHelper, updateDimensions]);
 
   if (loading) {
     return (
@@ -144,9 +157,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
       />
 
       {/* Bounding Box Gösterimi */}
-      {selectedModelId === id && boxHelper && (
-        <primitive object={boxHelper} />
-      )}
+      {selectedModelId === id && boxHelper && <primitive object={boxHelper} />}
 
       {selectedModelId === id && (
         <>
@@ -157,7 +168,7 @@ const Model = ({ id, path, position, scale, rotation }) => {
               mode="translate"
               onDragStart={() => setIsOrbitEnabled(false)}
               onDragEnd={() => setIsOrbitEnabled(true)}
-              showY={false}
+              showY={true}
             />
           )}
           {selectedTransformControl === "scale" && (

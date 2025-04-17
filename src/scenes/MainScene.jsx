@@ -4,6 +4,7 @@ import { OrbitControls, Environment, SoftShadows, GizmoHelper, GizmoViewport, Me
 import { useState, useCallback, useEffect, Suspense } from "react";
 import Model from "../modules/Model";
 import { useMainScene } from '../context/MainSceneContext';
+import { Floor } from '../models/Floor';
 
 const MainScene = () => {
   const { models, addModel, isOrbitEnabled } = useMainScene();
@@ -37,7 +38,7 @@ const MainScene = () => {
         camera={{ position: [0, 5, 10] }}
         style={{ background: "#C4C4C4" }}
       >
-        {/* <SoftShadows samples={10} size={20} /> */}
+        <SoftShadows samples={10} size={20} />
 
         {/* Ortam ve yönlü ışıklar */}
         <ambientLight intensity={0.8} />
@@ -75,14 +76,8 @@ const MainScene = () => {
         {/* Özel HDRI Laboratuvar Arka Planı */}
         <Environment files="/assets/hdr/peppermint_powerplant_2_1k.hdr" background />
 
-        {/* Yatay zemin */}
-        {/* <mesh receiveShadow position={[0, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[100, 100]} />
-          <meshStandardMaterial color="green" />
-        </mesh> */}
-
         {/* Zeminde yansıma efekti için Reflector */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
           <planeGeometry args={[100, 100]} />
           <MeshReflectorMaterial
             blur={[300, 100]}          // Yansımanın bulanıklığı (opsiyonel)
@@ -96,7 +91,10 @@ const MainScene = () => {
             metalness={0.5}            // Metalik parlaklık
             roughness={1}              // Yüzey pürüzlülüğü
           />
-        </mesh>
+        </mesh> */}
+
+        {/* Zemin */}
+        <Floor />
 
 
         {/* Modülleri sahnede göster */}
